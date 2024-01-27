@@ -1,0 +1,33 @@
+<%- include("partials/head.ejs") %> 
+<%- include("partials/header.ejs") %>
+
+<h2><%= product ? "Edit" : "Add" %> Product</h2>
+<form method="POST" action="<%= product ? '/products/update/' + product._id : '/products' %>">
+  <div>
+    <label for="productName">name:</label>
+    <input type="text" id="productName" name="productName" value="<%= product ? product.name : '' %>" required />
+  </div>
+  <div>
+    <label for="description">description:</label>
+    <input type="text" id="description" name="description" value="<%= product ? product.description : '' %>" required />
+  </div>
+  <div>
+    <label for="type">type:</label>
+    <select id="type">
+      <option value="Cookies" <%= product && product.type === "Cookies" ? "selected" : '' %> >Cookies</option>
+      <option value="Cakes" <%= product && product.type === "Cakes" ? "selected" : '' %> >Cakes</option>
+      <option value="Pies" <%= product && product.type === "Pies" ? "selected" : '' %> >Pies</option>
+      <option value="Breads" <%= product && product.type === "Breads" ? "selected" : '' %> >Breads</option>   
+      <option value="Cupcakes" <%= product && product.type === "Cupcakes" ? "selected" : '' %> >Cupcakes</option>
+      <option value="Waffles" <%= product && product.type === "Waffles" ? "selected" : '' %> >Waffles</option>
+      <option value="Others" <%= product && product.type === "Others" ? "selected" : '' %> >Others</option>         
+    </select>
+  </div>
+   <div>
+    <label for="price">price:</label>
+    <input type="text" id="price" name="price" value="<%= product ? product.price : '' %>" required"/>
+  </div>
+  <button type="submit" id="adding-product"><%= product ? "Update" : "Add" %></button>
+  <input type="hidden" name="_csrf" value="<%= _csrf %>" /> 
+</form>
+<%- include("partials/footer.ejs") %>
