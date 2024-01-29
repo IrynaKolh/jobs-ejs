@@ -21,7 +21,6 @@ const createProduct = async (req, res) => {
   }
 
   const product = await Product.create({ ...req.body });
-  console.log(product);
 
   res.redirect("/products");
 };
@@ -30,7 +29,6 @@ const editProduct = async (req, res) => {
 
   const productId = req.params.id;
   const userId = req.user._id.toString();
-  console.log(productId, userId);
   
   const product = await Product.findOne({
     _id: productId,
@@ -46,9 +44,9 @@ const editProduct = async (req, res) => {
 const updateProduct = async (req, res) => {
   const userId = req.user._id.toString();
   const productId = req.params.id;
-  const { name, price, description, type } = req.body;
+  const { productName, price, description, type } = req.body;
 
-  if (name === '' || price === '' || description === '' ) {
+  if (productName === '' || price === '' || description === '' ) {
     req.flash('error', 'All equired fields cannot be empty.');
     res.redirect('/products');
   }
@@ -70,7 +68,7 @@ const deleteProduct = async (req, res) => {
   const userId = req.user._id.toString();
   const productId = req.params.id;
 
-   const product = await Product.findOneAndRemove({
+   const product = await Product.findOneAndDelete({
      _id: productId,
      createdBy: userId,
    });

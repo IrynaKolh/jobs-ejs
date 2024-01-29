@@ -10,6 +10,10 @@ const auth = require("./middleware/auth");
 const cookieParser = require("cookie-parser");
 const csrf = require("host-csrf");
 const productsRouter = require("./routes/products");
+// extra security packages
+const helmet = require("helmet");
+const xss = require("xss-clean");
+const rateLimiter = require("express-rate-limit");
 
 const app = express();
 
@@ -39,6 +43,8 @@ if (app.get("env") === "production") {
   sessionParms.cookie.secure = true; // serve secure cookies
 }
 
+app.use(helmet()); // before session, set headers
+
 app.use(session(sessionParms));
 
 // after cookie_parser and any body parsers but before any of the routes.
@@ -64,6 +70,16 @@ app.use(passport.session());
 app.use(require("connect-flash")());
 
 app.use(require("./middleware/storeLocals"));
+
+// more security
+app.use(
+  rateLimiter({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    limit: 100, // Limit each IP to 100 requests per `window` (here, per 15 minutes).
+  })
+);
+
+app.use(xss());
 
 
 // routes

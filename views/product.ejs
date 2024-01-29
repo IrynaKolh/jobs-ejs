@@ -4,8 +4,8 @@
 <h2><%= product ? "Edit" : "Add" %> Product</h2>
 <form method="POST" action="<%= product ? '/products/update/' + product._id : '/products' %>">
   <div>
-    <label for="productName">name:</label>
-    <input type="text" id="productName" name="productName" value="<%= product ? product.name : '' %>" required />
+    <label for="name">name:</label>
+    <input type="text" id="name" name="name" value="<%= product ? product.name : '' %>" required />
   </div>
   <div>
     <label for="description">description:</label>
@@ -13,7 +13,7 @@
   </div>
   <div>
     <label for="type">type:</label>
-    <select id="type">
+    <select id="type" name="type">
       <option value="Cookies" <%= product && product.type === "Cookies" ? "selected" : '' %> >Cookies</option>
       <option value="Cakes" <%= product && product.type === "Cakes" ? "selected" : '' %> >Cakes</option>
       <option value="Pies" <%= product && product.type === "Pies" ? "selected" : '' %> >Pies</option>
