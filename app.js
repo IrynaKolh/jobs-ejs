@@ -9,6 +9,11 @@ const secretWordRouter = require("./routes/secretWord");
 const auth = require("./middleware/auth");
 const cookieParser = require("cookie-parser");
 const csrf = require("host-csrf");
+const productsRouter = require("./routes/products");
+// extra security packages
+const helmet = require("helmet");
+const xss = require("xss-clean");
+const rateLimiter = require("express-rate-limit");
 
 const app = express();
 
@@ -38,13 +43,14 @@ if (app.get("env") === "production") {
   sessionParms.cookie.secure = true; // serve secure cookies
 }
 
+app.use(helmet()); // before session, set headers
+
 app.use(session(sessionParms));
 
 // after cookie_parser and any body parsers but before any of the routes.
 app.use(cookieParser(process.env.SESSION_SECRET));
 app.use(express.urlencoded({ extended: false }));
 let csrf_development_mode = true;
-console.log(app.get("env"));
 if (app.get("env") === "production") {
   csrf_development_mode = false;
   app.set("trust proxy", 1);
@@ -65,16 +71,16 @@ app.use(require("connect-flash")());
 
 app.use(require("./middleware/storeLocals"));
 
-// These lines should be added before any of the lines that govern routes, such as the app.get and app.post statements:
-// app.use(
-//   session({
-//     secret: process.env.SESSION_SECRET,
-//     resave: false,
-//     saveUninitialized: true,
-//   })
-// );
+// more security
+app.use(
+  rateLimiter({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    limit: 100, // Limit each IP to 100 requests per `window` (here, per 15 minutes).
+  })
+);
 
-// secret word handling
+app.use(xss());
+
 
 // routes
 app.get("/", (req, res) => {
@@ -82,7 +88,7 @@ app.get("/", (req, res) => {
 });
 app.use("/sessions", require("./routes/sessionRoutes"));
 app.use("/secretWord", auth, secretWordRouter);
-
+app.use("/products", auth, productsRouter);
 
 app.use((req, res) => {
   res.status(404).send(`That page (${req.url}) was not found.`);

@@ -15,8 +15,7 @@ const passportInit = () => {
           }
 
           const result = await user.comparePassword(password);
-          if (result) {
-            console.log(user);
+          if (result) {     
             return done(null, user);
           } else {
             return done(null, false, { message: "Incorrect credentials." });
